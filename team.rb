@@ -51,13 +51,12 @@ module Jekyll
     # Loops through the list of team pages and processes each one.
     def write_team(site)
       if Dir.exists?('_team')
-        Dir.chdir('_team')
-        Dir["*.yml"].each do |path|
+        Dir["_team/*.yml"].each do |path|
           name = File.basename(path, '.yml')
-          self.write_person_index(site, "_team/#{path}", name)
+
+          self.write_person_index(site, "#{path}", name)
         end
 
-        Dir.chdir(site.source)
         self.write_team_index(site)
       end
     end
