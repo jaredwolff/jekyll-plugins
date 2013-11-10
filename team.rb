@@ -99,6 +99,12 @@ module Jekyll
         authors = page['author']
         authors = [authors] if authors.is_a?(String)
 
+        # Handles compile crash a bit better (especially if you don't want to use a author for a post)
+        if authors == "" or authors == nil
+          puts "Warning: Post '#{page["title"]}' has no author!"
+          return
+        end
+
         "".tap do |output|
           authors.each do |author|
             data     = YAML.load(File.read(File.join(site['source'], '_team', "#{author.downcase.gsub(' ', '-')}.yml")))
