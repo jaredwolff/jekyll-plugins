@@ -83,7 +83,7 @@ module Jekyll
     end
   end
 
-  class AuthorsTag < Liquid::Tag
+  class AuthorTag < Liquid::Tag
 
     def initialize(tag_name, text, tokens)
       super
@@ -92,30 +92,29 @@ module Jekyll
     end
 
     def render(context)
-      site = context.environments.first["site"]
-      page = context.environments.first["page"]
 
-      if page
-        authors = page['author']
-        authors = [authors] if authors.is_a?(String)
+      markup =  Liquid::Template.parse(@text).render(context)
 
-        # Handles compile crash a bit better (especially if you don't want to use a author for a post)
-        if authors == "" or authors == nil
+      site = context.registers[:site]
+      page = context.registers[:page]
+
+      if markup
+        author = markup.gsub(" ", "")
+
+        if author == "" or author == nil
           puts "Warning: Post '#{page["title"]}' has no author!"
           return
         end
 
         "".tap do |output|
-          authors.each do |author|
-            data     = YAML.load(File.read(File.join(site['source'], '_team', "#{author.downcase.gsub(' ', '-')}.yml")))
-            template = File.read(File.join(site['source'], '_includes', 'author.html'))
+            data     = YAML.load(File.read(File.join(site.config['source'], '_team', "#{author.downcase.gsub(' ', '-')}.yml")))
+            template = File.read(File.join(site.config['source'], '_includes', 'author.html'))
 
             output << Liquid::Template.parse(template).render('author' => data)
-          end
         end
       end
     end
   end
 end
 
-Liquid::Template.register_tag('authors', Jekyll::AuthorsTag)
+Liquid::Template.register_tag('author', Jekyll::AuthorTag)
