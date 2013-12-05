@@ -7,6 +7,9 @@ module Jekyll
       @name = "index.html"
 
       self.read_yaml(File.join(base, '_layouts'), 'team.html')
+
+      @site.data['team'] = self.get_team(site)
+
       self.data['team'] = self.get_team(site)
       self.process(@name)
     end
