@@ -7,10 +7,7 @@ module Jekyll
       @name = "index.html"
 
       self.read_yaml(File.join(base, '_layouts'), 'team.html')
-
       @site.data['team'] = self.get_team(site)
-
-      self.data['team'] = self.get_team(site)
       self.process(@name)
     end
 
@@ -30,19 +27,6 @@ module Jekyll
     end
   end
 
-  class PersonIndex < Page
-    def initialize(site, base, dir, path)
-      @site     = site
-      @base     = base
-      @dir      = dir
-      @name     = "index.html"
-      self.data = YAML.load(File.read(File.join(@base, path)))
-      self.data['title'] = "#{self.data['name']} | #{self.data['role']}"
-
-      self.process(@name)
-    end
-  end
-
   class GenerateTeam < Generator
     safe true
     priority :normal
@@ -54,12 +38,6 @@ module Jekyll
     # Loops through the list of team pages and processes each one.
     def write_team(site)
       if Dir.exists?('_team')
-        Dir["_team/*.yml"].each do |path|
-          name = File.basename(path, '.yml')
-
-          self.write_person_index(site, "#{path}", name)
-        end
-
         self.write_team_index(site)
       end
     end
@@ -73,17 +51,6 @@ module Jekyll
       site.static_files << team
     end
 
-    def write_person_index(site, path, name)
-      person = PersonIndex.new(site, site.source, "/team/#{name}", path)
-
-      if person.data['active']
-        person.render(site.layouts, site.site_payload)
-        person.write(site.dest)
-
-        site.pages << person
-        site.static_files << person
-      end
-    end
   end
 
   class AuthorTag < Liquid::Tag
